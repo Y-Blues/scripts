@@ -1,10 +1,11 @@
-#app="all"
-import json
+"""
+    component that allow to execute javascript
+"""
 
-from ycappuccino.core.api import IActivityLogger, IService, YCappuccino
-from ycappuccino.storage.api import IManager
-from ycappuccino.core.decorator_app import App
-from ycappuccino.scripts.api import IScriptInterpreter
+from ycappuccino_api.core.api import IActivityLogger, IService, YCappuccino
+from ycappuccino_storage.api import IManager
+from ycappuccino_core.decorator_app import App
+from ycappuccino_api.scripts.api import IScriptInterpreter
 import dukpy
 import logging
 from pelix.ipopo.decorators import ComponentFactory, Requires, Validate, Invalidate, Provides, Instantiate
