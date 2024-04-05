@@ -1,0 +1,14 @@
+---
+models.app:
+  ycappuccino_scripts: true
+  ycappuccino_service_comm_storage: true
+layers:
+  ycappuccino_scripts:
+    active: true
+  ycappuccino_service_comm:
+    active: true
+    host: localhost
+    port: 0
+    scheme: http
+name: scripts
+bundle_prefix: ycappuccino

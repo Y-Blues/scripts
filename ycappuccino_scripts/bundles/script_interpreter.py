@@ -4,6 +4,8 @@
 
 from ycappuccino_api.core.api import IActivityLogger, IService, YCappuccino
 from ycappuccino_storage.api import IManager
+
+from ycappuccino_api.proxy.api import YCappuccinoRemote
 from ycappuccino_core.decorator_app import App
 from ycappuccino_api.scripts.api import IScriptInterpreter
 import dukpy
@@ -15,9 +17,9 @@ _logger = logging.getLogger(__name__)
 
 
 @ComponentFactory('ScriptInterpreter-Factory')
-@Provides(specifications=[IService.name, YCappuccino.name,IScriptInterpreter.name])
-@Requires("_log", IActivityLogger.name, spec_filter="'(name=main)'")
-@Requires("_manager_media", IManager.name, spec_filter="'(item_id=media)'")
+@Provides(specifications=[YCappuccinoRemote.__name__, IService.__name__,IScriptInterpreter.__name__])
+@Requires("_log", IActivityLogger.__name__, spec_filter="'(name=main)'")
+@Requires("_manager_media", IManager.__name__, spec_filter="'(item_id=media)'")
 @Instantiate("ScriptInterpreter")
 @App(name="ycappuccino.script")
 class ScriptInterpreter(IService):
