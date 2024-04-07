@@ -2,22 +2,35 @@
     component that allow to execute javascript
 """
 
-from ycappuccino_api.core.api import IActivityLogger, IService, YCappuccino
+from ycappuccino_api.core.api import IActivityLogger, IService
 from ycappuccino_storage.api import IManager
 
-from ycappuccino_api.proxy.api import YCappuccinoRemote
-from ycappuccino_core.decorator_app import App
+from src.main.python.proxy import YCappuccinoRemote
+from src.main.python.decorator_app import App
 from ycappuccino_api.scripts.api import IScriptInterpreter
 import dukpy
 import logging
-from pelix.ipopo.decorators import ComponentFactory, Requires, Validate, Invalidate, Provides, Instantiate
+from pelix.ipopo.decorators import (
+    ComponentFactory,
+    Requires,
+    Validate,
+    Invalidate,
+    Provides,
+    Instantiate,
+)
 
 
 _logger = logging.getLogger(__name__)
 
 
-@ComponentFactory('ScriptInterpreter-Factory')
-@Provides(specifications=[YCappuccinoRemote.__name__, IService.__name__,IScriptInterpreter.__name__])
+@ComponentFactory("ScriptInterpreter-Factory")
+@Provides(
+    specifications=[
+        YCappuccinoRemote.__name__,
+        IService.__name__,
+        IScriptInterpreter.__name__,
+    ]
+)
 @Requires("_log", IActivityLogger.__name__, spec_filter="'(name=main)'")
 @Requires("_manager_media", IManager.__name__, spec_filter="'(item_id=media)'")
 @Instantiate("ScriptInterpreter")
@@ -25,27 +38,26 @@ _logger = logging.getLogger(__name__)
 class ScriptInterpreter(IService):
 
     def __init__(self):
-        super(ScriptInterpreter, self).__init__();
+        super(ScriptInterpreter, self).__init__()
         self._manager_media = None
         self._log = None
         self._context = None
+
     def get_name(self):
         return "scripts"
 
     def is_sercure(self):
         return True
 
-
-
     def post(self, a_header, a_url_path, a_body):
-        """ return tuple of 2 element that admit a dictionnary of header and a body"""
-        if a_url_path.get_params() is not None and "scriptId" in a_url_path.get_params():
+        """return tuple of 2 element that admit a dictionnary of header and a body"""
+        if (
+            a_url_path.get_params() is not None
+            and "scriptId" in a_url_path.get_params()
+        ):
             w_id = a_url_path.get_params()["scriptId"]
             w_resp = self.execute_script(w_id)
-            w_meta = {
-                "type": "object",
-                "size": 1
-            }
+            w_meta = {"type": "object", "size": 1}
             return w_meta, w_resp
         raise Exception("no script Id received")
 
@@ -68,27 +80,25 @@ class ScriptInterpreter(IService):
         return False
 
     def get_extra_path(self):
-        """ return the list of extra path that are manage by service """
-        return {
-            "post": ["{scriptId}/execute"],
-            "get": [],
-            "put": [],
-            "delete": []
-        }
+        """return the list of extra path that are manage by service"""
+        return {"post": ["{scriptId}/execute"], "get": [], "put": [], "delete": []}
 
-    def get_class(self,kls):
-        parts = kls.split('.')
+    def get_class(self, kls):
+        parts = kls.split(".")
         module = ".".join(parts[:-1])
         m = __import__(module)
         for comp in parts[1:]:
             m = getattr(m, comp)
         return m
+
     def execute_script(self, a_script_id):
         w_script = self._manager_media.get_one("media", a_script_id, None)
         if w_script is None:
             raise Exception("can't find script from id {}".format(a_script_id))
 
-        w_filename = "{}/{}.{}".format(w_script.get_path(), w_script.get_file_name(), w_script.get_extension())
+        w_filename = "{}/{}.{}".format(
+            w_script.get_path(), w_script.get_file_name(), w_script.get_extension()
+        )
         w_content = ""
         w_component = {}
         with open(w_filename, "r") as f:
@@ -97,22 +107,22 @@ class ScriptInterpreter(IService):
                 w_split_line = w_line.split(" ")
 
                 w_ldap_filter = None
-                if len(w_split_line)>2:
+                if len(w_split_line) > 2:
                     w_class_name = w_split_line[1]
                     w_variable_name = w_split_line[2]
                     if len(w_split_line) > 3:
                         w_ldap_filter = w_split_line[3]
 
-                    w_ref = self._context.get_service_reference(self.get_class(w_class_name),w_ldap_filter)
+                    w_ref = self._context.get_service_reference(
+                        self.get_class(w_class_name), w_ldap_filter
+                    )
                     w_service = self._context.get_service(w_ref)
                     w_component[w_variable_name] = w_service
             else:
                 w_content = w_content + w_line + "\n"
 
         dukpy.evaljs(w_content, components=w_component)
-        return {
-            "result":"script executed"
-        }
+        return {"result": "script executed"}
 
     def get(self, a_header, a_url_path):
         return self.post(a_header, a_url_path, None)
@@ -131,6 +141,3 @@ class ScriptInterpreter(IService):
         self._log.info("ScriptInterpreter invalidating")
 
         self._log.info("ScriptInterpreter invalidated")
-
-
-

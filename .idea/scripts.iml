@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="endpoints_storage" />
+    <orderEntry type="module" module-name="endpoint_crud" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module" module-name="api" />
   </component>
