@@ -2,12 +2,12 @@
     component that allow to execute javascript
 """
 
-from ycappuccino_api.core.api import IActivityLogger, IService
-from ycappuccino_storage.api import IManager
+from ycappuccino.api.core.api import IActivityLogger, IService
+from ycappuccino.api.storage.api import IManager
 
-from src.main.python.proxy import YCappuccinoRemote
-from src.main.python.decorator_app import App
-from ycappuccino_api.scripts.api import IScriptInterpreter
+from ycappuccino.api.proxy.api import YCappuccinoRemote
+from ycappuccino.core.decorator_app import App
+from ycappuccino.api.scripts.api import IScriptInterpreter
 import dukpy
 import logging
 from pelix.ipopo.decorators import (
