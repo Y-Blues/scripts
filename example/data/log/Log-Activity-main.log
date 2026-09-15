@@ -4,3 +4,7 @@
 2023-08-15 17:38:37,912;INFO;MainThread;proxy.py;proxy;validate;(49);serverProxy validated
 2023-08-17 15:10:40,096;INFO;MainThread;proxy.py;proxy;validate;(47);serverProxy validating
 2023-08-17 15:10:40,096;INFO;MainThread;proxy.py;proxy;validate;(49);serverProxy validated
+2026-09-15 22:46:09,264;INFO;ycappuccino-async;activity_logger.py;activity_logger;start;(82);main is valid
+2026-09-15 22:46:09,265;INFO;ycappuccino-async;list_components.py;list_components;start;(43);start list component
+2026-09-15 22:46:09,269;INFO;ycappuccino-async;proxy.py;proxy;_method_call;(101);hello from a script
+2026-09-15 22:46:09,269;INFO;ycappuccino-async;demo.py;demo;start;(40);script result: {'result': 'ok'}

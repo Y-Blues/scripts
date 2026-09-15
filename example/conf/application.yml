@@ -1,14 +1,13 @@
 ---
-models.app:
-  ycappuccino_scripts: true
-  ycappuccino_service_comm_storage: true
+name: scripts-demo
+bundle_prefix:
+  - ycappuccino.storage
+  - ycappuccino.endpoints_service
+  - ycappuccino.scripts
+  - library
 layers:
-  ycappuccino_scripts:
+  ycappuccino_storage_memory:
     active: true
-  ycappuccino_service_comm:
-    active: true
-    host: localhost
-    port: 0
-    scheme: http
-name: scripts
-bundle_prefix: ycappuccino
+config:
+  http_server:
+    active: false
