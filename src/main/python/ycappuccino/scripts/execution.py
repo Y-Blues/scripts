@@ -8,11 +8,12 @@ leading @Require lines are now accepted, one per requirement.
 """
 
 import re
+from typing import Any, Callable
 
 _REQUIRE = re.compile(r"^#\s*@Require\s+(\S+)\s+(\S+)(?:\s+(\S+))?\s*$")
 
 
-def parse_requirements(source):
+def parse_requirements(source: str) -> tuple:
     """returns ([(spec_name, variable_name, ldap_filter_or_None), ...], remaining_source)"""
     lines = source.splitlines(keepends=True)
     requirements = []
@@ -26,7 +27,7 @@ def parse_requirements(source):
     return requirements, "".join(lines[index:])
 
 
-def execute(source, resolve_service, extra_globals=None):
+def execute(source: str, resolve_service: Callable, extra_globals: dict | None = None) -> Any:
     """
     resolve_service(spec_name, ldap_filter) -> object, called once per leading @Require line.
     Runs the remaining source with the resolved services (and extra_globals) as globals; returns
