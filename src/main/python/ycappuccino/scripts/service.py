@@ -6,10 +6,11 @@ retired: see the design spec for why this is now Python, not JS/dukpy).
 
 from typing import Any
 
-from ycappuccino.api.endpoints_service import IExposedService, ServiceResult
+from ycappuccino.api.decorators import rpc_method
+from ycappuccino.api.endpoints_service import IExposedService
 from ycappuccino.api.endpoints_storage import NotFound
 from ycappuccino.api.storage import IManager
-from ycappuccino.scripts.execution import execute
+from ycappuccino.scripts import execution
 
 
 class ScriptService(IExposedService):
@@ -28,17 +29,12 @@ class ScriptService(IExposedService):
     async def stop(self) -> None:
         pass
 
-    async def call(
-        self, method: str, extra_path: list, params: dict, body: Any, subject: dict | None
-    ) -> ServiceResult:
-        if method != "POST" or len(extra_path) != 2 or extra_path[1] != "execute":
-            raise NotFound("not found")
-        script_id = extra_path[0]
+    @rpc_method(method="POST", path="/{script_id}/execute", summary="execute a script")
+    async def execute(self, script_id: str, subject: dict | None) -> dict:
         script = await self._manager.get_one("script", script_id, subject=subject)
         if script is None:
             raise NotFound(f"unknown script {script_id}")
-        result = execute(script.get_storage_model()["source"], self._resolve_service)
-        return ServiceResult(body={"result": result})
+        return {"result": execution.execute(script.get_storage_model()["source"], self._resolve_service)}
 
 
 def _resolve_from_framework(spec_name: str, ldap_filter: str | None) -> Any:

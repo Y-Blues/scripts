@@ -51,9 +51,9 @@ class TestScriptsInFramework(unittest.TestCase):
         )
         asyncio.run(manager.up_sert_model(script))
 
-        result = asyncio.run(service.call("POST", ["greet", "execute"], {}, None, None))
+        result = asyncio.run(service.execute("greet", None))
 
-        self.assertEqual(result.body, {"result": "ok"})
+        self.assertEqual(result, {"result": "ok"})
 
 
 if __name__ == "__main__":

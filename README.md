@@ -43,11 +43,11 @@ await manager.up_sert_model(script)
 
 ## Exécuter un script
 
-`ScriptService.call` lit l'id du script dans `extra_path`, reproduisant la forme legacy `{scriptId}/execute` : seul `POST` avec `extra_path == [script_id, "execute"]` est supporté, toute autre combinaison lève `NotFound`.
+`ScriptService.execute(script_id, subject)` lit le script avec les droits du sujet et l'exécute ; un id inconnu lève `NotFound`. La méthode est marquée `@rpc_method(method="POST", path="/{script_id}/execute")`, ce qui reproduit la forme legacy `{scriptId}/execute` : `IServiceEndpoint` y route `POST` sur `[script_id, "execute"]`, toute autre combinaison lève `NotFound`.
 
 ```python
-result = await script_service.call("POST", ["greet", "execute"], {}, None, subject)
-print(result.body)  # {"result": "hello"}
+result = await script_service.execute("greet", subject)
+print(result)  # {"result": "hello"}
 ```
 
 Le script peut fixer une variable globale `result` ; sans elle, le résultat est `"script executed"` (comportement du legacy, conservé par défaut). Une fois `http_server` chargé, le même appel se fait par `POST /api/services/scripts/greet/execute`.
@@ -87,9 +87,9 @@ class TestGreetScript(unittest.IsolatedAsyncioTestCase):
         await manager.up_sert_model(script)
 
         service = ScriptService(manager)
-        result = await service.call("POST", ["greet", "execute"], {}, None, None)
+        result = await service.execute("greet", None)
 
-        self.assertEqual(result.body, {"result": 2})
+        self.assertEqual(result, {"result": 2})
 ```
 
 ## Développer scripts

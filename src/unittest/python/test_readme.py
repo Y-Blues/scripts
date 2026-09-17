@@ -25,9 +25,9 @@ class TestGreetScript(unittest.IsolatedAsyncioTestCase):
         await manager.up_sert_model(script)
 
         service = ScriptService(manager)
-        result = await service.call("POST", ["greet", "execute"], {}, None, None)
+        result = await service.execute("greet", None)
 
-        self.assertEqual(result.body, {"result": 2})
+        self.assertEqual(result, {"result": 2})
 
 
 if __name__ == "__main__":
